@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT Encryption and Decryption</title>
+    <!-- Include CryptoJS library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>JWT Encryption and Decryption</h1>
+
+    <div class="container">
+        <h2>Test Your Implementation</h2>
+        <p>Click the button below to test your JWT encryption and decryption implementation:</p>
+        <button id="testBtn">Test Implementation</button>
+        <div id="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>About JWT Tokens</h2>
+        <p>JSON Web Tokens (JWT) are an open, industry standard RFC 7519 method for representing claims securely between two parties.</p>
+        <p>JWTs consist of three parts separated by dots:</p>
+        <ul>
+            <li><strong>Header</strong> - Contains the type of token and the signing algorithm</li>
+            <li><strong>Payload</strong> - Contains the claims (data)</li>
+            <li><strong>Signature</strong> - Used to verify the token hasn't been tampered with</li>
+        </ul>
+        <p>In this implementation, we're adding an extra layer of security by encrypting the entire JWT token using AES-256.</p>
+    </div>
+
+    <script>
+        // Define window.module for browser compatibility
+        window.module = {};
+    </script>
+    <script src="script.js"></script>
+    <script>
+        document.getElementById('testBtn').addEventListener('click', function() {
+            const resultDiv = document.getElementById('result');
+
+            try {
+                // Test data
+                const testPayload = {
+                    userId: 123,
+                    username: "testuser",
+                    role: "admin",
+                    exp: Math.floor(Date.now() / 1000) + (60 * 60) // 1 hour from now
+                };
+
+                // Get the encrypt and decrypt functions from script.js
+                const { encrypt, decrypt } = window.module.exports;
+
+                // Test encryption
+                const token = encrypt(testPayload);
+                console.log("Encrypted token:", token);
+
+                // Test decryption
+                const decryptedPayload = decrypt(token);
+                console.log("Decrypted payload:", decryptedPayload);
+
+                // Verify the result
+                const isSuccess = JSON.stringify(testPayload) === JSON.stringify(decryptedPayload);
+
+                if (isSuccess) {
+                    resultDiv.innerHTML = '<h3 style="color: green;">Success!</h3>' +
+                        '<p>Your implementation works correctly.</p>' +
+                        '<pre>Original: ' + JSON.stringify(testPayload, null, 2) + '</pre>' +
+                        '<pre>Token: ' + token + '</pre>' +
+                        '<pre>Decrypted: ' + JSON.stringify(decryptedPayload, null, 2) + '</pre>';
+                    console.log("Success");
+                } else {
+                    resultDiv.innerHTML = '<h3 style="color: red;">Failed!</h3>' +
+                        '<p>The decrypted payload does not match the original.</p>' +
+                        '<pre>Original: ' + JSON.stringify(testPayload, null, 2) + '</pre>' +
+                        '<pre>Token: ' + token + '</pre>' +
+                        '<pre>Decrypted: ' + JSON.stringify(decryptedPayload, null, 2) + '</pre>';
+                    console.log("Failed");
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<h3 style="color: red;">Error!</h3>' +
+                    '<p>' + error.message + '</p>';
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
